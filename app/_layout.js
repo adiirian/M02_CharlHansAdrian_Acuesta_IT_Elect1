@@ -1,11 +1,11 @@
-import { Tabs } from "expo-router";
+import ColorChangerApp from "./ColorChangerApp";
+import CounterApp from "./CounterApp";
 
 export default function RootLayout() {
   return (
-    <Tabs>
-      <Tabs.Screen name="index" options={{ title: 'Home' }} />
-      <Tabs.Screen name="messenger" options={{ title: 'Messenger' }} />
-      <Tabs.Screen name="comments" options={{ title: 'Comments' }} />
-    </Tabs>
+    <div>
+      <CounterApp />
+      <ColorChangerApp />
+    </div>
   );
 }

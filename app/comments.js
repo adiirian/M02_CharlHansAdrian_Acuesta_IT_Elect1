@@ -14,7 +14,7 @@ export default function Comments() {
     {
       id: '1',
       title: 'First Post',
-      content: 'This is the first post. What do you think?',
+      content: 'This is a sample post. Comment anything you want here',
       comments: [],
     },
   ]);

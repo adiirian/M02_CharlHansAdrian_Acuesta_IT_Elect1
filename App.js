@@ -1,7 +1,7 @@
 import ColorChangerApp from "./ColorChangerApp";
 import CounterApp from "./CounterApp";
 
-export default function RootLayout() {
+export default function App() {
   return (
     <div>
       <CounterApp />
@@ -9,3 +9,5 @@ export default function RootLayout() {
     </div>
   );
 }
+
+//this is my Activity 5

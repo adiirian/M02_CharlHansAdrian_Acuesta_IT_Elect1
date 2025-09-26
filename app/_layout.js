@@ -9,3 +9,5 @@ export default function RootLayout() {
     </Tabs>
   );
 }
+
+//this is the App.js alternative for expo-router on my Midterm Activity 1

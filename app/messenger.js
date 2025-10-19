@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import {
   FlatList,
+  Image,
+  KeyboardAvoidingView,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -76,39 +78,42 @@ export default function Messenger() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <FlatList
-        data={messages}
-        keyExtractor={(item) => item.id}
-        renderItem={renderMessage}
-        style={styles.flatList}
-        contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 10 }}
-      />
-      {replyingTo && (
-        <View style={styles.replyContainer}>
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <SafeAreaView style={styles.container}>
+        <FlatList
+          data={messages}
+          keyExtractor={(item) => item.id}
+          renderItem={renderMessage}
+          style={styles.flatList}
+          contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 10 }}
+        />
+        {replyingTo && (
+          <View style={styles.replyContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Reply..."
+              value={replyText}
+              onChangeText={setReplyText}
+            />
+            <TouchableOpacity style={styles.sendButton} onPress={() => addReply(replyingTo)}>
+              <Text style={styles.sendText}>Reply</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
-            placeholder="Reply..."
-            value={replyText}
-            onChangeText={setReplyText}
+            placeholder="Type a message..."
+            value={input}
+            onChangeText={setInput}
           />
-          <TouchableOpacity style={styles.sendButton} onPress={() => addReply(replyingTo)}>
-            <Text style={styles.sendText}>Reply</Text>
+          <Image source={require('../assets/images/2x2-pic.png')} style={styles.imageIcon} />
+          <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+            <Text style={styles.sendText}>Send</Text>
           </TouchableOpacity>
         </View>
-      )}
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Type a message..."
-          value={input}
-          onChangeText={setInput}
-        />
-        <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
-          <Text style={styles.sendText}>Send</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -187,5 +192,10 @@ const styles = StyleSheet.create({
   sendText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  imageIcon: {
+    width: 20,
+    height: 20,
+    marginLeft: 10,
   },
 });

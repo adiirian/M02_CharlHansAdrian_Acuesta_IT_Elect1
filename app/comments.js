@@ -1,20 +1,48 @@
 import { useState } from 'react';
 import {
   FlatList,
+  Image,
+  KeyboardAvoidingView,
   SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 
 export default function Comments() {
   const [posts, setPosts] = useState([
     {
       id: '1',
-      title: 'First Post',
-      content: 'This is a sample post. Comment anything you want here',
+      title: 'First 2x2 Pic Post',
+      content: 'This is my pictorial post. Comment anything nicely here!',
+      image: require('../assets/images/2x2-pic.png'),
+      likes: 0,
+      comments: [],
+    },
+    {
+      id: '2',
+      title: 'Beautiful Sunset',
+      content: 'Caught this amazing sunset today! Nature is truly breathtaking.',
+      image: require('../assets/images/beautiful-sunset.jpg'),
+      likes: 15,
+      comments: [],
+    },
+    {
+      id: '3',
+      title: 'New Recipe',
+      content: 'Just tried this new pasta recipe. It was delicious! 🍝',
+      image: require('../assets/images/recipe.jpg'),
+      likes: 8,
+      comments: [],
+    },
+    {
+      id: '4',
+      title: 'Weekend Plans',
+      content: 'Anyone up for a hike this weekend? The weather looks perfect!',
+      image: require('../assets/images/weekend.jpg'),
+      likes: 22,
       comments: [],
     },
   ]);
@@ -59,10 +87,30 @@ export default function Comments() {
     setReplyingTo(null);
   };
 
+  const toggleLike = (postId) => {
+    setPosts(posts.map(post =>
+      post.id === postId
+        ? { ...post, likes: post.likes + 1 }
+        : post
+    ));
+  };
+
   const renderPost = ({ item }) => (
     <View style={styles.postContainer}>
       <Text style={styles.postTitle}>{item.title}</Text>
       <Text style={styles.postContent}>{item.content}</Text>
+      <Image source={item.image} style={styles.postImage} />
+      <View style={styles.actionButtons}>
+        <TouchableOpacity style={styles.actionButton} onPress={() => toggleLike(item.id)}>
+          <Text style={styles.actionText}>👍 {item.likes}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.actionButton}>
+          <Text style={styles.actionText}>💬 {item.comments.length}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.actionButton}>
+          <Text style={styles.actionText}>📤 Share</Text>
+        </TouchableOpacity>
+      </View>
       <FlatList
         data={item.comments}
         keyExtractor={(comment) => comment.id}
@@ -120,14 +168,16 @@ export default function Comments() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <FlatList
-        data={posts}
-        keyExtractor={(item) => item.id}
-        renderItem={renderPost}
-        style={styles.postsList}
-      />
-    </SafeAreaView>
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <SafeAreaView style={styles.container}>
+        <FlatList
+          data={posts}
+          keyExtractor={(item) => item.id}
+          renderItem={renderPost}
+          style={styles.postsList}
+        />
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -217,5 +267,23 @@ const styles = StyleSheet.create({
   },
   repliesList: {
     flexGrow: 0,
+  },
+  postImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 10,
+  },
+  actionButton: {
+    padding: 5,
+  },
+  actionText: {
+    fontSize: 16,
+    color: '#007AFF',
   },
 });

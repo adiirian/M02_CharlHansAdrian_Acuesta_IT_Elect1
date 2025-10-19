@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function Index() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Midterm Activity 1</Text>
+      <Text style={styles.title}>SemiFinal Act 1</Text>
       <Text style={styles.subtitle}>Navigate using the tabs below</Text>
     </View>
   );

@@ -2,19 +2,19 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { clearResetToken, getUserByEmail, saveResetToken, updateUserPassword } from './utils/database';
-import { generateResetToken, hashPassword, validateEmail, validatePassword } from './utils/passwordUtils';
+import { clearResetToken, getUserByEmail, saveResetToken, updateUserPassword } from '../utils/database';
+import { generateResetToken, hashPassword, validateEmail, validatePassword } from '../utils/passwordUtils';
 
 export default function ForgotPassword() {
   const router = useRouter();

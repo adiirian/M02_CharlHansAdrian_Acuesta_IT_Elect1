@@ -58,20 +58,6 @@ export default function Index() {
       {/* Navigation Info */}
       <View style={styles.navigationInfo}>
         <Text style={styles.navigationText}>Navigate using the tabs below</Text>
-        <View style={styles.tabsPreview}>
-          <View style={styles.tabItem}>
-            <Ionicons name="home" size={20} color="#007AFF" />
-            <Text style={styles.tabText}>Home</Text>
-          </View>
-          <View style={styles.tabItem}>
-            <Ionicons name="chatbubbles" size={20} color="#888" />
-            <Text style={styles.tabText}>Messenger</Text>
-          </View>
-          <View style={styles.tabItem}>
-            <Ionicons name="chatbox" size={20} color="#888" />
-            <Text style={styles.tabText}>Comments</Text>
-          </View>
-        </View>
       </View>
 
       {/* Logout Button */}

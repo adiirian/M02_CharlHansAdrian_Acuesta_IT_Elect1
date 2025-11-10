@@ -46,15 +46,16 @@ export default function Comments() {
       comments: [],
     },
   ]);
-  const [newComment, setNewComment] = useState('');
+  const [commentInputs, setCommentInputs] = useState({});
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState('');
 
   const addComment = (postId) => {
-    if (newComment.trim() === '') return;
+    const commentText = commentInputs[postId] || '';
+    if (commentText.trim() === '') return;
     const comment = {
       id: Date.now().toString(),
-      text: newComment,
+      text: commentText,
       replies: [],
     };
     setPosts(posts.map(post =>
@@ -62,7 +63,7 @@ export default function Comments() {
         ? { ...post, comments: [...post.comments, comment] }
         : post
     ));
-    setNewComment('');
+    setCommentInputs({ ...commentInputs, [postId]: '' });
   };
 
   const addReply = (postId, commentId) => {
@@ -122,8 +123,8 @@ export default function Comments() {
         <TextInput
           style={styles.input}
           placeholder="Add a comment..."
-          value={newComment}
-          onChangeText={setNewComment}
+          value={commentInputs[item.id] || ''}
+          onChangeText={(text) => setCommentInputs({ ...commentInputs, [item.id]: text })}
         />
         <TouchableOpacity style={styles.sendButton} onPress={() => addComment(item.id)}>
           <Text style={styles.sendText}>Post</Text>

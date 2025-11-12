@@ -19,6 +19,19 @@ export const initDatabase = async () => {
       );
     `);
 
+    // Create messages table
+    await db.execAsync(`
+      CREATE TABLE IF NOT EXISTS messages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sender_id INTEGER NOT NULL,
+        receiver_id INTEGER NOT NULL,
+        message TEXT NOT NULL,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(sender_id) REFERENCES users(id),
+        FOREIGN KEY(receiver_id) REFERENCES users(id)
+      );
+    `);
+
     console.log('Database initialized successfully');
     return db;
   } catch (error) {
@@ -135,6 +148,57 @@ export const getAllUsers = async () => {
     return users;
   } catch (error) {
     console.error('Error getting all users:', error);
+    throw error;
+  }
+};
+
+// Get all users excluding a specific user ID
+export const getAllUsersExcluding = async (excludeId) => {
+  try {
+    const db = getDatabase();
+    const users = await db.getAllAsync(
+      'SELECT id, email FROM users WHERE id != ?',
+      [excludeId]
+    );
+    return users;
+  } catch (error) {
+    console.error('Error getting users excluding ID:', error);
+    throw error;
+  }
+};
+
+// Insert a new message
+export const insertMessage = async (senderId, receiverId, message) => {
+  try {
+    const db = getDatabase();
+    const result = await db.runAsync(
+      'INSERT INTO messages (sender_id, receiver_id, message) VALUES (?, ?, ?)',
+      [senderId, receiverId, message]
+    );
+    return result.lastInsertRowid;
+  } catch (error) {
+    console.error('Error inserting message:', error);
+    throw error;
+  }
+};
+
+// Get messages between two users
+export const getMessagesBetween = async (userId1, userId2) => {
+  try {
+    const db = getDatabase();
+    const messages = await db.getAllAsync(
+      `SELECT m.id, m.sender_id, m.receiver_id, m.message, m.timestamp,
+              u1.email as sender_email, u2.email as receiver_email
+       FROM messages m
+       JOIN users u1 ON m.sender_id = u1.id
+       JOIN users u2 ON m.receiver_id = u2.id
+       WHERE (m.sender_id = ? AND m.receiver_id = ?) OR (m.sender_id = ? AND m.receiver_id = ?)
+       ORDER BY m.timestamp ASC`,
+      [userId1, userId2, userId2, userId1]
+    );
+    return messages;
+  } catch (error) {
+    console.error('Error getting messages between users:', error);
     throw error;
   }
 };

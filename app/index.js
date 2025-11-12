@@ -31,7 +31,7 @@ export default function Index() {
       <View style={styles.header}>
         <Ionicons name="person-circle-outline" size={80} color="#007AFF" />
         <Text style={styles.title}>Welcome Back!</Text>
-        <Text style={styles.subtitle}>SemiFinal Act 1</Text>
+        <Text style={styles.subtitle}>Activity 3</Text>
       </View>
 
       {/* User Info Card */}

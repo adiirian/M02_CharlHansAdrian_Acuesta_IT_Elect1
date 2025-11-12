@@ -1,6 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
+  Alert,
   FlatList,
   Image,
   KeyboardAvoidingView,
@@ -11,48 +14,178 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useAuth } from '../context/AuthContext';
+import { getAllUsers, getAllUsersExcluding, getMessagesBetween, insertMessage } from '../utils/database';
 
 export default function Messenger() {
-  const [messages, setMessages] = useState([
-    { id: '1', text: 'Hello!', sender: 'other', replies: [] },
-    { id: '2', text: 'Hi! How are you?', sender: 'me', replies: [] },
-    { id: '3', text: 'I’m okay love!', sender: 'other', replies: [] },
-  ]);
+  const { user, isAuthenticated } = useAuth();
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState('');
   const [replyingToMessage, setReplyingToMessage] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const sendMessage = () => {
-    if (input.trim() === '') return;
+  // Fetch users on mount
+  useEffect(() => {
+    if (!user) return;
 
-    const newMessage = {
-      id: Date.now().toString(),
-      text: input,
-      sender: 'me',
-      replies: [],
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        const userList = await getAllUsersExcluding(user.id);
+        setUsers(userList);
+        if (userList.length > 0 && !selectedUser) {
+          setSelectedUser(userList[0]); // Select first user by default
+        }
+
+        // Debug: Log all registered users
+        const allUsers = await getAllUsers();
+        console.log('All registered users:', allUsers.map(u => ({ id: u.id, email: u.email, role: u.role, createdAt: u.createdAt })));
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        Alert.alert('Error', 'Failed to load users');
+      } finally {
+        setLoading(false);
+      }
     };
 
-    setMessages([...messages, newMessage]);
-    setInput('');
+    fetchUsers();
+  }, [user]);
+
+  // Fetch messages when selectedUser changes
+  useEffect(() => {
+    if (!user || !selectedUser) return;
+
+    const fetchMessages = async () => {
+      try {
+        setRefreshing(true);
+        const dbMessages = await getMessagesBetween(user.id, selectedUser.id);
+        // Map DB messages to UI format
+        const uiMessages = dbMessages.map((msg) => ({
+          id: msg.id.toString(),
+          text: msg.message,
+          sender: msg.sender_id === user.id ? 'me' : 'other',
+          senderEmail: msg.sender_email,
+          timestamp: msg.timestamp,
+          replies: [], // Flat for now, replies as separate messages
+        }));
+        setMessages(uiMessages);
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+        Alert.alert('Error', 'Failed to load messages');
+      } finally {
+        setRefreshing(false);
+      }
+    };
+
+    fetchMessages();
+  }, [selectedUser, user]);
+
+  // Poll for new messages every 5 seconds when chatting
+  useEffect(() => {
+    if (!selectedUser) return;
+
+    const interval = setInterval(() => {
+      // Refetch messages
+      const fetchMessages = async () => {
+        try {
+          const dbMessages = await getMessagesBetween(user.id, selectedUser.id);
+          const uiMessages = dbMessages.map((msg) => ({
+            id: msg.id.toString(),
+            text: msg.message,
+            sender: msg.sender_id === user.id ? 'me' : 'other',
+            senderEmail: msg.sender_email,
+            timestamp: msg.timestamp,
+            replies: [],
+          }));
+          setMessages(uiMessages);
+        } catch (error) {
+          console.error('Error polling messages:', error);
+        }
+      };
+      fetchMessages();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [selectedUser, user]);
+
+  // Refresh on focus
+  useFocusEffect(
+    useCallback(() => {
+      if (selectedUser) {
+        // Refetch messages
+        const fetchMessages = async () => {
+          try {
+            const dbMessages = await getMessagesBetween(user.id, selectedUser.id);
+            const uiMessages = dbMessages.map((msg) => ({
+              id: msg.id.toString(),
+              text: msg.message,
+              sender: msg.sender_id === user.id ? 'me' : 'other',
+              senderEmail: msg.sender_email,
+              timestamp: msg.timestamp,
+              replies: [],
+            }));
+            setMessages(uiMessages);
+          } catch (error) {
+            console.error('Error refreshing messages:', error);
+          }
+        };
+        fetchMessages();
+      }
+    }, [selectedUser, user])
+  );
+
+  const sendMessage = async () => {
+    if (input.trim() === '' || !selectedUser) return;
+
+    try {
+      await insertMessage(user.id, selectedUser.id, input);
+      setInput('');
+      // Refetch messages to update UI
+      const dbMessages = await getMessagesBetween(user.id, selectedUser.id);
+      const uiMessages = dbMessages.map((msg) => ({
+        id: msg.id.toString(),
+        text: msg.message,
+        sender: msg.sender_id === user.id ? 'me' : 'other',
+        senderEmail: msg.sender_email,
+        timestamp: msg.timestamp,
+        replies: [],
+      }));
+      setMessages(uiMessages);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      Alert.alert('Error', 'Failed to send message');
+    }
   };
 
-  const addReply = (messageId, originalText) => {
-    if (replyText.trim() === '') return;
-    const reply = {
-      id: Date.now().toString(),
-      text: replyText,
-      sender: 'me',
-      replyingTo: originalText,
-    };
-    setMessages(messages.map(message =>
-      message.id === messageId
-        ? { ...message, replies: [...message.replies, reply] }
-        : message
-    ));
-    setReplyText('');
-    setReplyingTo(null);
-    setReplyingToMessage(null);
+  const addReply = async (messageId, originalText) => {
+    if (replyText.trim() === '' || !selectedUser) return;
+
+    const replyContent = `Replying to: ${originalText}\n${replyText}`;
+    try {
+      await insertMessage(user.id, selectedUser.id, replyContent);
+      setReplyText('');
+      setReplyingTo(null);
+      setReplyingToMessage(null);
+      // Refetch messages
+      const dbMessages = await getMessagesBetween(user.id, selectedUser.id);
+      const uiMessages = dbMessages.map((msg) => ({
+        id: msg.id.toString(),
+        text: msg.message,
+        sender: msg.sender_id === user.id ? 'me' : 'other',
+        senderEmail: msg.sender_email,
+        timestamp: msg.timestamp,
+        replies: [],
+      }));
+      setMessages(uiMessages);
+    } catch (error) {
+      console.error('Error sending reply:', error);
+      Alert.alert('Error', 'Failed to send reply');
+    }
   };
 
   const renderMessage = ({ item }) => (
@@ -62,9 +195,10 @@ export default function Messenger() {
         item.sender === 'me' ? styles.myMessageRow : styles.otherMessageRow
       ]}>
         {/* Avatar for 'other' person - shown on left */}
-        {item.sender === 'other' && (
+        {item.sender === 'other' && selectedUser && (
           <View style={styles.avatarContainer}>
             <Ionicons name="person-circle-outline" size={32} color="#007AFF" />
+            <Text style={styles.userEmail}>{selectedUser.email}</Text>
           </View>
         )}
 
@@ -88,17 +222,18 @@ export default function Messenger() {
         </TouchableOpacity>
 
         {/* Avatar for 'me' - shown on right */}
-        {item.sender === 'me' && (
+        {item.sender === 'me' && user && (
           <View style={styles.avatarContainer}>
             <Image
               source={require('../assets/images/2x2-pic.png')}
               style={styles.avatar}
             />
+            <Text style={styles.userEmail}>{user.email}</Text>
           </View>
         )}
       </View>
 
-      {/* Replies */}
+      {/* Replies - Flat for now, no nested */}
       <FlatList
         data={item.replies}
         keyExtractor={(reply) => reply.id}
@@ -129,15 +264,85 @@ export default function Messenger() {
     </View>
   );
 
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#007AFF" />
+          <Text style={styles.loadingText}>Loading users...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (!isAuthenticated || users.length === 0) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>No users available. Register more users to chat.</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
       <SafeAreaView style={styles.container}>
+        {/* User Selection */}
+        <View style={styles.userSelectionContainer}>
+          <Text style={styles.userSelectionTitle}>Select User to Chat</Text>
+          <FlatList
+            horizontal
+            data={users}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={[
+                  styles.userItem,
+                  selectedUser?.id === item.id ? styles.selectedUser : null
+                ]}
+                onPress={() => setSelectedUser(item)}
+              >
+                <Ionicons name="person-circle-outline" size={24} color="#007AFF" />
+                <Text style={styles.userEmail}>{item.email}</Text>
+              </TouchableOpacity>
+            )}
+            style={styles.userList}
+          />
+        </View>
+
         <FlatList
           data={messages}
           keyExtractor={(item) => item.id}
           renderItem={renderMessage}
           style={styles.flatList}
           contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 10 }}
+          refreshing={refreshing}
+          onRefresh={() => {
+            if (selectedUser) {
+              // Manual refresh
+              const fetchMessages = async () => {
+                try {
+                  setRefreshing(true);
+                  const dbMessages = await getMessagesBetween(user.id, selectedUser.id);
+                  const uiMessages = dbMessages.map((msg) => ({
+                    id: msg.id.toString(),
+                    text: msg.message,
+                    sender: msg.sender_id === user.id ? 'me' : 'other',
+                    senderEmail: msg.sender_email,
+                    timestamp: msg.timestamp,
+                    replies: [],
+                  }));
+                  setMessages(uiMessages);
+                } catch (error) {
+                  console.error('Error refreshing:', error);
+                } finally {
+                  setRefreshing(false);
+                }
+              };
+              fetchMessages();
+            }
+          }}
         />
         {replyingTo && (
           <View style={styles.replyContainer}>
@@ -173,17 +378,19 @@ export default function Messenger() {
             </View>
           </View>
         )}
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Type a message..."
-            value={input}
-            onChangeText={setInput}
-          />
-          <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
-            <Text style={styles.sendText}>Send</Text>
-          </TouchableOpacity>
-        </View>
+        {selectedUser && (
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Type a message..."
+              value={input}
+              onChangeText={setInput}
+            />
+            <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+              <Text style={styles.sendText}>Send</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </SafeAreaView>
     </KeyboardAvoidingView>
   );
@@ -193,6 +400,48 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#121212',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: '#fff',
+    marginTop: 10,
+    fontSize: 16,
+  },
+  userSelectionContainer: {
+    padding: 10,
+    backgroundColor: '#1a1a1a',
+    borderBottomWidth: 1,
+    borderBottomColor: '#333',
+  },
+  userSelectionTitle: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  userList: {
+    maxHeight: 60,
+  },
+  userItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    marginRight: 10,
+    backgroundColor: '#333',
+    borderRadius: 20,
+  },
+  selectedUser: {
+    backgroundColor: '#007AFF',
+  },
+  userEmail: {
+    color: '#fff',
+    marginLeft: 8,
+    fontSize: 14,
   },
   flatList: {
     flex: 1,
@@ -212,8 +461,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   avatarContainer: {
-    width: 32,
-    height: 32,
+    alignItems: 'center',
     marginHorizontal: 8,
   },
   avatar: {

@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Stack, Tabs, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
@@ -58,6 +59,9 @@ function RootLayoutNav() {
         options={{
           title: 'Home',
           headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home-outline" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
@@ -65,6 +69,9 @@ function RootLayoutNav() {
         options={{
           title: 'Messenger',
           headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="chatbubble-outline" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
@@ -72,6 +79,9 @@ function RootLayoutNav() {
         options={{
           title: 'Comments',
           headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="document-text-outline" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen

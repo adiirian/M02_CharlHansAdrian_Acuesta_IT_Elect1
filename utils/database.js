@@ -1,20 +1,23 @@
 import * as SQLite from 'expo-sqlite';
 
-let db;
+let db = null;
 
-// Initialize database
+// Initialize database and create tables
 export const initDatabase = async () => {
   try {
+    // Open database
     db = await SQLite.openDatabaseAsync('auth.db');
 
-    // Create users table
+    // Create users table with name field
     await db.execAsync(`
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         email TEXT UNIQUE NOT NULL,
+        name TEXT NOT NULL,
         password TEXT NOT NULL,
         role TEXT DEFAULT 'user',
         resetToken TEXT,
+        profile_picture TEXT,
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
       );
     `);
@@ -27,13 +30,12 @@ export const initDatabase = async () => {
         receiver_id INTEGER NOT NULL,
         message TEXT NOT NULL,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY(sender_id) REFERENCES users(id),
-        FOREIGN KEY(receiver_id) REFERENCES users(id)
+        FOREIGN KEY (sender_id) REFERENCES users (id),
+        FOREIGN KEY (receiver_id) REFERENCES users (id)
       );
     `);
 
     console.log('Database initialized successfully');
-    return db;
   } catch (error) {
     console.error('Error initializing database:', error);
     throw error;
@@ -43,24 +45,22 @@ export const initDatabase = async () => {
 // Get database instance
 export const getDatabase = () => {
   if (!db) {
-    throw new Error('Database not initialized. Call initDatabase first.');
+    throw new Error('Database not initialized. Call initDatabase() first.');
   }
   return db;
 };
 
-// Create new user
-export const createUser = async (email, hashedPassword) => {
+// Create a new user
+export const createUser = async (email, hashedPassword, name) => {
   try {
-    const db = getDatabase();
-    const result = await db.runAsync(
-      'INSERT INTO users (email, password, role) VALUES (?, ?, ?)',
-      [email.toLowerCase(), hashedPassword, 'user']
+    const database = getDatabase();
+    const result = await database.runAsync(
+      'INSERT INTO users (email, password, name) VALUES (?, ?, ?)',
+      [email.toLowerCase(), hashedPassword, name]
     );
     return result;
   } catch (error) {
-    if (error.message.includes('UNIQUE constraint failed')) {
-      throw new Error('Email already exists');
-    }
+    console.error('Error creating user:', error);
     throw error;
   }
 };
@@ -68,14 +68,14 @@ export const createUser = async (email, hashedPassword) => {
 // Get user by email
 export const getUserByEmail = async (email) => {
   try {
-    const db = getDatabase();
-    const user = await db.getFirstAsync(
-      'SELECT * FROM users WHERE email = ?',
+    const database = getDatabase();
+    const user = await database.getFirstAsync(
+      'SELECT id, email, name, password, role, resetToken, profile_picture, createdAt FROM users WHERE email = ?',
       [email.toLowerCase()]
     );
     return user;
   } catch (error) {
-    console.error('Error getting user:', error);
+    console.error('Error getting user by email:', error);
     throw error;
   }
 };
@@ -83,14 +83,14 @@ export const getUserByEmail = async (email) => {
 // Update user password
 export const updateUserPassword = async (email, newHashedPassword) => {
   try {
-    const db = getDatabase();
-    await db.runAsync(
+    const database = getDatabase();
+    await database.runAsync(
       'UPDATE users SET password = ? WHERE email = ?',
       [newHashedPassword, email.toLowerCase()]
     );
     return true;
   } catch (error) {
-    console.error('Error updating password:', error);
+    console.error('Error updating user password:', error);
     throw error;
   }
 };
@@ -98,8 +98,8 @@ export const updateUserPassword = async (email, newHashedPassword) => {
 // Save reset token
 export const saveResetToken = async (email, token) => {
   try {
-    const db = getDatabase();
-    await db.runAsync(
+    const database = getDatabase();
+    await database.runAsync(
       'UPDATE users SET resetToken = ? WHERE email = ?',
       [token, email.toLowerCase()]
     );
@@ -113,12 +113,12 @@ export const saveResetToken = async (email, token) => {
 // Verify reset token
 export const verifyResetToken = async (email, token) => {
   try {
-    const db = getDatabase();
-    const user = await db.getFirstAsync(
-      'SELECT * FROM users WHERE email = ? AND resetToken = ?',
-      [email.toLowerCase(), token]
+    const database = getDatabase();
+    const user = await database.getFirstAsync(
+      'SELECT resetToken FROM users WHERE email = ?',
+      [email.toLowerCase()]
     );
-    return user !== null;
+    return user && user.resetToken === token;
   } catch (error) {
     console.error('Error verifying reset token:', error);
     throw error;
@@ -128,8 +128,8 @@ export const verifyResetToken = async (email, token) => {
 // Clear reset token
 export const clearResetToken = async (email) => {
   try {
-    const db = getDatabase();
-    await db.runAsync(
+    const database = getDatabase();
+    await database.runAsync(
       'UPDATE users SET resetToken = NULL WHERE email = ?',
       [email.toLowerCase()]
     );
@@ -140,11 +140,13 @@ export const clearResetToken = async (email) => {
   }
 };
 
-// Get all users (for debugging)
+// Get all users (without passwords)
 export const getAllUsers = async () => {
   try {
-    const db = getDatabase();
-    const users = await db.getAllAsync('SELECT id, email, role, createdAt FROM users');
+    const database = getDatabase();
+    const users = await database.getAllAsync(
+      'SELECT id, email, name, role, profile_picture, createdAt FROM users'
+    );
     return users;
   } catch (error) {
     console.error('Error getting all users:', error);
@@ -152,17 +154,32 @@ export const getAllUsers = async () => {
   }
 };
 
-// Get all users excluding a specific user ID
-export const getAllUsersExcluding = async (excludeId) => {
+// Get all users excluding a specific user (without passwords)
+export const getAllUsersExcluding = async (excludeUserId) => {
   try {
-    const db = getDatabase();
-    const users = await db.getAllAsync(
-      'SELECT id, email FROM users WHERE id != ?',
-      [excludeId]
+    const database = getDatabase();
+    const users = await database.getAllAsync(
+      'SELECT id, email, name, role, profile_picture, createdAt FROM users WHERE id != ?',
+      [excludeUserId]
     );
     return users;
   } catch (error) {
-    console.error('Error getting users excluding ID:', error);
+    console.error('Error getting all users excluding:', error);
+    throw error;
+  }
+};
+
+// Update user profile picture
+export const updateUserProfilePicture = async (userId, profilePictureUri) => {
+  try {
+    const database = getDatabase();
+    await database.runAsync(
+      'UPDATE users SET profile_picture = ? WHERE id = ?',
+      [profilePictureUri, userId]
+    );
+    return true;
+  } catch (error) {
+    console.error('Error updating profile picture:', error);
     throw error;
   }
 };
@@ -170,12 +187,12 @@ export const getAllUsersExcluding = async (excludeId) => {
 // Insert a new message
 export const insertMessage = async (senderId, receiverId, message) => {
   try {
-    const db = getDatabase();
-    const result = await db.runAsync(
+    const database = getDatabase();
+    const result = await database.runAsync(
       'INSERT INTO messages (sender_id, receiver_id, message) VALUES (?, ?, ?)',
       [senderId, receiverId, message]
     );
-    return result.lastInsertRowid;
+    return result;
   } catch (error) {
     console.error('Error inserting message:', error);
     throw error;
@@ -185,10 +202,11 @@ export const insertMessage = async (senderId, receiverId, message) => {
 // Get messages between two users
 export const getMessagesBetween = async (userId1, userId2) => {
   try {
-    const db = getDatabase();
-    const messages = await db.getAllAsync(
+    const database = getDatabase();
+    const messages = await database.getAllAsync(
       `SELECT m.id, m.sender_id, m.receiver_id, m.message, m.timestamp,
-              u1.email as sender_email, u2.email as receiver_email
+              u1.email as sender_email, u1.name as sender_name,
+              u2.email as receiver_email, u2.name as receiver_name
        FROM messages m
        JOIN users u1 ON m.sender_id = u1.id
        JOIN users u2 ON m.receiver_id = u2.id

@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as FileSystem from 'expo-file-system/legacy';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { createUser, getUserByEmail, initDatabase } from '../utils/database';
+import { createUser, getUserByEmail, initDatabase, updateUserProfilePicture } from '../utils/database';
 import { comparePassword, hashPassword, validateEmail, validatePassword } from '../utils/passwordUtils';
 
 const AuthContext = createContext();
@@ -42,7 +43,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Register new user
-  const register = async (email, password, confirmPassword) => {
+  const register = async (email, name, password, confirmPassword) => {
     try {
       // Validate email
       if (!validateEmail(email)) {
@@ -64,14 +65,16 @@ export const AuthProvider = ({ children }) => {
       const hashedPassword = await hashPassword(password);
 
       // Create user in database
-      await createUser(email, hashedPassword);
+      await createUser(email, hashedPassword, name);
 
       // Auto login after registration
       const newUser = await getUserByEmail(email);
       const userData = {
         id: newUser.id,
         email: newUser.email,
-        role: newUser.role
+        role: newUser.role,
+        name: newUser.name,
+        profile_picture: newUser.profile_picture
       };
 
       setUser(userData);
@@ -114,7 +117,9 @@ export const AuthProvider = ({ children }) => {
       const userData = {
         id: dbUser.id,
         email: dbUser.email,
-        role: dbUser.role
+        role: dbUser.role,
+        name: dbUser.name,
+        profile_picture: dbUser.profile_picture
       };
 
       setUser(userData);
@@ -139,6 +144,36 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Update profile picture
+  const updateProfilePicture = async (profilePictureUri) => {
+    try {
+      if (!user) {
+        throw new Error('No user logged in');
+      }
+
+      // Copy the image to a permanent location
+      const fileName = `profile_${user.id}_${Date.now()}.jpg`;
+      const permanentUri = `${FileSystem.documentDirectory}${fileName}`;
+      await FileSystem.copyAsync({
+        from: profilePictureUri,
+        to: permanentUri,
+      });
+
+      // Update in database with permanent URI
+      await updateUserProfilePicture(user.id, permanentUri);
+
+      // Update local state
+      const updatedUser = { ...user, profile_picture: permanentUri };
+      setUser(updatedUser);
+      await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error updating profile picture:', error);
+      return { success: false, error: error.message };
+    }
+  };
+
   const value = {
     user,
     isLoading,
@@ -146,7 +181,8 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: !!user,
     register,
     login,
-    logout
+    logout,
+    updateProfilePicture
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

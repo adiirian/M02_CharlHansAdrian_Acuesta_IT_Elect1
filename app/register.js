@@ -21,6 +21,7 @@ export default function Register() {
   const { register } = useAuth();
 
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -31,13 +32,13 @@ export default function Register() {
   const passwordsMatch = password && confirmPassword && password === confirmPassword;
 
   const handleRegister = async () => {
-    if (!email.trim() || !password.trim() || !confirmPassword.trim()) {
+    if (!email.trim() || !name.trim() || !password.trim() || !confirmPassword.trim()) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
 
     setIsLoading(true);
-    const result = await register(email.trim(), password, confirmPassword);
+    const result = await register(email.trim(), name.trim(), password, confirmPassword);
     setIsLoading(false);
 
     if (!result.success) {
@@ -63,6 +64,20 @@ export default function Register() {
 
           {/* Form */}
           <View style={styles.form}>
+            {/* Name Input */}
+            <View style={styles.inputContainer}>
+              <Ionicons name="person-outline" size={20} color="#888" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Full Name"
+                placeholderTextColor="#888"
+                value={name}
+                onChangeText={setName}
+                autoCapitalize="words"
+                autoComplete="name"
+              />
+            </View>
+
             {/* Email Input */}
             <View style={styles.inputContainer}>
               <Ionicons name="mail-outline" size={20} color="#888" style={styles.inputIcon} />

@@ -28,6 +28,7 @@ export default function Messenger() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [userProfiles, setUserProfiles] = useState({});
 
   // Fetch users on mount
   useEffect(() => {
@@ -70,6 +71,7 @@ export default function Messenger() {
           text: msg.message,
           sender: msg.sender_id === user.id ? 'me' : 'other',
           senderEmail: msg.sender_email,
+          senderName: msg.sender_name,
           timestamp: msg.timestamp,
           replies: [], // Flat for now, replies as separate messages
         }));
@@ -197,8 +199,16 @@ export default function Messenger() {
         {/* Avatar for 'other' person - shown on left */}
         {item.sender === 'other' && selectedUser && (
           <View style={styles.avatarContainer}>
-            <Ionicons name="person-circle-outline" size={32} color="#007AFF" />
-            <Text style={styles.userEmail}>{selectedUser.email}</Text>
+            {selectedUser?.profile_picture ? (
+              <Image
+                source={{ uri: selectedUser.profile_picture }}
+                style={styles.avatar}
+                contentFit="cover"
+              />
+            ) : (
+              <Ionicons name="person-circle-outline" size={32} color="#007AFF" />
+            )}
+            <Text style={styles.userEmail}>{selectedUser.name || selectedUser.email}</Text>
           </View>
         )}
 
@@ -224,11 +234,16 @@ export default function Messenger() {
         {/* Avatar for 'me' - shown on right */}
         {item.sender === 'me' && user && (
           <View style={styles.avatarContainer}>
-            <Image
-              source={require('../assets/images/2x2-pic.png')}
-              style={styles.avatar}
-            />
-            <Text style={styles.userEmail}>{user.email}</Text>
+            {user?.profile_picture ? (
+              <Image
+                source={{ uri: user.profile_picture }}
+                style={styles.avatar}
+                contentFit="cover"
+              />
+            ) : (
+              <Ionicons name="person-circle-outline" size={32} color="#007AFF" />
+            )}
+            <Text style={styles.userEmail}>{user.name || user.email}</Text>
           </View>
         )}
       </View>
@@ -303,8 +318,16 @@ export default function Messenger() {
                 ]}
                 onPress={() => setSelectedUser(item)}
               >
-                <Ionicons name="person-circle-outline" size={24} color="#007AFF" />
-                <Text style={styles.userEmail}>{item.email}</Text>
+                {item?.profile_picture ? (
+                  <Image
+                    source={{ uri: item.profile_picture }}
+                    style={styles.userAvatar}
+                    contentFit="cover"
+                  />
+                ) : (
+                  <Ionicons name="person-circle-outline" size={24} color="#007AFF" />
+                )}
+                <Text style={styles.userEmail}>{item.name || item.email}</Text>
               </TouchableOpacity>
             )}
             style={styles.userList}
@@ -594,5 +617,10 @@ const styles = StyleSheet.create({
   sendText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  userAvatar: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
   },
 });

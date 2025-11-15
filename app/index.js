@@ -1,9 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 
 export default function Index() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateProfilePicture } = useAuth();
 
   const handleLogout = () => {
     Alert.alert(
@@ -25,17 +27,65 @@ export default function Index() {
     );
   };
 
+  const pickImage = async () => {
+    // Request permissions
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Camera roll permissions are required to select a profile picture.');
+      return;
+    }
+
+    // Launch image picker
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      const selectedImage = result.assets[0];
+      const updateResult = await updateProfilePicture(selectedImage.uri);
+      if (updateResult.success) {
+        Alert.alert('Success', 'Profile picture updated successfully!');
+      } else {
+        Alert.alert('Error', updateResult.error || 'Failed to update profile picture.');
+      }
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Ionicons name="person-circle-outline" size={80} color="#007AFF" />
-        <Text style={styles.title}>Welcome Back!</Text>
+        <TouchableOpacity onPress={pickImage} style={styles.profilePictureContainer}>
+          {user?.profile_picture ? (
+            <Image
+              source={{ uri: user.profile_picture }}
+              style={styles.profilePicture}
+              contentFit="cover"
+            />
+          ) : (
+            <Ionicons name="person-circle-outline" size={80} color="#007AFF" />
+          )}
+        </TouchableOpacity>
+        <Text style={styles.changePictureText}>Click this icon to change picture</Text>
+        <Text style={styles.title}>Welcome Back, {user?.name}!</Text>
         <Text style={styles.subtitle}>Activity 3</Text>
       </View>
 
       {/* User Info Card */}
       <View style={styles.card}>
+        <View style={styles.infoRow}>
+          <Ionicons name="person-outline" size={20} color="#007AFF" />
+          <View style={styles.infoContent}>
+            <Text style={styles.infoLabel}>Name</Text>
+            <Text style={styles.infoValue}>{user?.name || user?.email}</Text>
+          </View>
+        </View>
+
+        <View style={styles.divider} />
+
         <View style={styles.infoRow}>
           <Ionicons name="mail-outline" size={20} color="#007AFF" />
           <View style={styles.infoContent}>
@@ -44,15 +94,7 @@ export default function Index() {
           </View>
         </View>
 
-        <View style={styles.divider} />
 
-        <View style={styles.infoRow}>
-          <Ionicons name="shield-checkmark-outline" size={20} color="#007AFF" />
-          <View style={styles.infoContent}>
-            <Text style={styles.infoLabel}>Role</Text>
-            <Text style={styles.infoValue}>{user?.role || 'user'}</Text>
-          </View>
-        </View>
       </View>
 
       {/* Navigation Info */}
@@ -87,6 +129,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginTop: 15,
     marginBottom: 5,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
@@ -133,6 +176,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#888',
     marginBottom: 15,
+    textAlign: 'center',
+    justifyContent: 'center',
   },
   tabsPreview: {
     flexDirection: 'row',
@@ -166,5 +211,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginLeft: 10,
+  },
+  profilePictureContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  profilePicture: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 2,
+    borderColor: '#007AFF',
+  },
+  changePictureText: {
+    fontSize: 14,
+    color: '#888',
+    marginTop: 5,
+    marginBottom: 10,
   },
 });

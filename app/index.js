@@ -1,11 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useState } from 'react';
+import { Alert, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 
 export default function Index() {
   const { user, logout, updateProfilePicture } = useAuth();
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const handleLogout = () => {
     Alert.alert(
@@ -97,16 +99,56 @@ export default function Index() {
 
       </View>
 
-      {/* Navigation Info */}
-      <View style={styles.navigationInfo}>
-        <Text style={styles.navigationText}>Navigate using the tabs below</Text>
-      </View>
+      {/* About Button */}
+      <TouchableOpacity style={styles.aboutButton} onPress={() => setIsModalVisible(true)}>
+        <Ionicons name="information-circle-outline" size={20} color="#fff" />
+        <Text style={styles.aboutText}>About</Text>
+      </TouchableOpacity>
 
       {/* Logout Button */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Ionicons name="log-out-outline" size={20} color="#fff" />
         <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>
+
+            {/* Navigation Info */}
+      <View style={styles.navigationInfo}>
+        <Text style={styles.navigationText}>Navigate using the tabs below</Text>
+      </View>
+
+      {/* About Modal */}
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity style={styles.closeButton} onPress={() => setIsModalVisible(false)}>
+              <Ionicons name="close" size={24} color="#fff" />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>App Info</Text>
+            <Image
+              source={require('../assets/images/2x2-pic.png')}
+              style={styles.modalImage}
+              contentFit="cover"
+            />
+            <Text style={styles.modalLabel}>Submitted By:</Text>
+            <Text style={styles.modalValue}>Charl Hans Adrian Acuesta</Text>
+            <Text style={styles.modalLabel}>Submitted To:</Text>
+            <Text style={styles.modalValue}>Jay Ian Camelotes</Text>
+            <Text style={styles.modalLabel}>Bio:</Text>
+            <Text style={styles.modalValue}>Though I&apos;m still discovering who I am, I continue to walk the path to success.
+              &ldquo;In the end, we will remember not the words of our enemies, but the silence of our friends.&rdquo; - Martin Luther King Jr.
+            </Text>
+            <Text style={styles.modalLabel}>Address:</Text>
+            <Text style={styles.modalValue}>Guinobatan, Trinidad, Bohol</Text>
+            <Text style={styles.modalLabel}>Final Project in IT Elective 1:</Text>
+            <Text style={styles.modalValue}>Mobile Dev</Text>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -204,7 +246,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 12,
-    marginTop: 20,
+    marginTop: 10,
   },
   logoutText: {
     color: '#fff',
@@ -228,5 +270,62 @@ const styles = StyleSheet.create({
     color: '#888',
     marginTop: 5,
     marginBottom: 10,
+  },
+  aboutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 12,
+    marginBottom: 10,
+  },
+  aboutText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 10,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#1e1e1e',
+    borderRadius: 16,
+    padding: 20,
+    width: '90%',
+    maxWidth: 400,
+    alignItems: 'center',
+  },
+  closeButton: {
+    alignSelf: 'flex-end',
+    marginBottom: 10,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 20,
+  },
+  modalImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 20,
+  },
+  modalLabel: {
+    fontSize: 14,
+    color: '#888',
+    alignSelf: 'flex-start',
+    marginBottom: 5,
+  },
+  modalValue: {
+    fontSize: 16,
+    color: '#fff',
+    marginBottom: 15,
+    textAlign: 'left',
   },
 });

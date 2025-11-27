@@ -15,6 +15,7 @@ import {
   View,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+import { colors } from '../theme/colors';
 import { getAllUsers, getAllUsersExcluding, getMessagesBetween, insertMessage } from '../utils/database';
 
 export default function Messenger() {
@@ -206,7 +207,7 @@ export default function Messenger() {
                 contentFit="cover"
               />
             ) : (
-              <Ionicons name="person-circle-outline" size={32} color="#007AFF" />
+              <Ionicons name="person-circle-outline" size={32} color={colors.accent} />
             )}
             <Text style={styles.userEmail}>{selectedUser.name || selectedUser.email}</Text>
           </View>
@@ -241,7 +242,7 @@ export default function Messenger() {
                 contentFit="cover"
               />
             ) : (
-              <Ionicons name="person-circle-outline" size={32} color="#007AFF" />
+              <Ionicons name="person-circle-outline" size={32} color={colors.accent} />
             )}
             <Text style={styles.userEmail}>{user.name || user.email}</Text>
           </View>
@@ -256,7 +257,7 @@ export default function Messenger() {
           <View style={styles.replyRow}>
             <View style={styles.avatarContainer}>
               <Image
-                source={require('../assets/images/2x2-pic.png')}
+                source={require('../assets/images/payot.jpg')}
                 style={styles.avatar}
               />
             </View>
@@ -283,7 +284,7 @@ export default function Messenger() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#007AFF" />
+          <ActivityIndicator size="large" color={colors.accent} />
           <Text style={styles.loadingText}>Loading users...</Text>
         </View>
       </SafeAreaView>
@@ -325,7 +326,7 @@ export default function Messenger() {
                     contentFit="cover"
                   />
                 ) : (
-                  <Ionicons name="person-circle-outline" size={24} color="#007AFF" />
+                  <Ionicons name="person-circle-outline" size={24} color={colors.accent} />
                 )}
                 <Text style={styles.userEmail}>{item.name || item.email}</Text>
               </TouchableOpacity>
@@ -386,12 +387,13 @@ export default function Messenger() {
               </TouchableOpacity>
             </View>
             <View style={styles.replyInputRow}>
-              <TextInput
-                style={styles.input}
-                placeholder="Reply..."
-                value={replyText}
-                onChangeText={setReplyText}
-              />
+          <TextInput
+            style={styles.input}
+            placeholder="Reply..."
+            placeholderTextColor={colors.textSecondary}
+            value={replyText}
+            onChangeText={setReplyText}
+          />
               <TouchableOpacity
                 style={styles.sendButton}
                 onPress={() => addReply(replyingTo, replyingToMessage)}
@@ -403,12 +405,13 @@ export default function Messenger() {
         )}
         {selectedUser && (
           <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Type a message..."
-              value={input}
-              onChangeText={setInput}
-            />
+          <TextInput
+            style={styles.input}
+            placeholder="Type a message..."
+            placeholderTextColor={colors.textSecondary}
+            value={input}
+            onChangeText={setInput}
+          />
             <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
               <Text style={styles.sendText}>Send</Text>
             </TouchableOpacity>
@@ -422,7 +425,7 @@ export default function Messenger() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
@@ -430,18 +433,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingText: {
-    color: '#fff',
+    color: colors.textPrimary,
     marginTop: 10,
     fontSize: 16,
   },
   userSelectionContainer: {
     padding: 10,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#333',
+    borderBottomColor: colors.border,
   },
   userSelectionTitle: {
-    color: '#fff',
+    color: colors.textPrimary,
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10,
@@ -455,14 +458,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     marginRight: 10,
-    backgroundColor: '#333',
+    backgroundColor: colors.surfaceElevated,
     borderRadius: 20,
   },
   selectedUser: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.accent,
   },
   userEmail: {
-    color: '#fff',
+    color: colors.textPrimary,
     marginLeft: 8,
     fontSize: 14,
   },
@@ -498,47 +501,47 @@ const styles = StyleSheet.create({
     maxWidth: '70%',
   },
   myMessage: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.accent,
     borderBottomRightRadius: 4,
   },
   otherMessage: {
-    backgroundColor: '#333',
+    backgroundColor: colors.surfaceElevated,
     borderBottomLeftRadius: 4,
   },
   messageText: {
     fontSize: 16,
-    color: '#fff',
+    color: colors.textPrimary,
   },
   replyText: {
     fontSize: 14,
-    color: '#ccc',
+    color: colors.textSecondary,
     marginTop: 5,
   },
   replyContainer: {
     paddingVertical: 10,
     paddingHorizontal: 10,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: colors.surface,
     borderTopWidth: 1,
-    borderTopColor: '#333',
+    borderTopColor: colors.border,
   },
   replyingToPreview: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#2a2a2a',
+    backgroundColor: colors.surfaceElevated,
     padding: 8,
     borderRadius: 8,
     marginBottom: 8,
   },
   replyingToLabel: {
     fontSize: 12,
-    color: '#007AFF',
+    color: colors.accent,
     fontWeight: 'bold',
     marginRight: 5,
   },
   replyingToText: {
     flex: 1,
     fontSize: 12,
-    color: '#aaa',
+    color: colors.textSecondary,
     fontStyle: 'italic',
   },
   cancelReply: {
@@ -546,7 +549,7 @@ const styles = StyleSheet.create({
   },
   cancelReplyText: {
     fontSize: 16,
-    color: '#888',
+    color: colors.textSecondary,
     fontWeight: 'bold',
   },
   replyInputRow: {
@@ -555,10 +558,10 @@ const styles = StyleSheet.create({
   },
   replyContext: {
     borderLeftWidth: 3,
-    borderLeftColor: '#007AFF',
+    borderLeftColor: colors.accent,
     paddingLeft: 8,
     marginBottom: 6,
-    backgroundColor: '#2a2a2a',
+    backgroundColor: colors.surfaceElevated,
     padding: 6,
     borderRadius: 4,
   },
@@ -568,11 +571,11 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: 3,
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.accent,
   },
   replyContextText: {
     fontSize: 12,
-    color: '#aaa',
+    color: colors.textSecondary,
     fontStyle: 'italic',
   },
   replyRow: {
@@ -583,7 +586,7 @@ const styles = StyleSheet.create({
     marginRight: 40,
   },
   replyBubble: {
-    backgroundColor: '#555',
+    backgroundColor: colors.surface,
     borderBottomRightRadius: 4,
   },
   repliesList: {
@@ -594,28 +597,28 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 10,
     alignItems: 'center',
-    backgroundColor: '#1a1a1a',
+    backgroundColor: colors.surface,
   },
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#555',
+    borderColor: colors.border,
     borderRadius: 20,
     paddingHorizontal: 15,
     paddingVertical: 8,
-    backgroundColor: '#333',
-    color: '#fff',
+    backgroundColor: colors.surfaceElevated,
+    color: colors.textPrimary,
   },
   sendButton: {
     marginLeft: 10,
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.accent,
     paddingHorizontal: 20,
     paddingVertical: 10,
     justifyContent: 'center',
     borderRadius: 20,
   },
   sendText: {
-    color: '#fff',
+    color: colors.textPrimary,
     fontWeight: 'bold',
   },
   userAvatar: {

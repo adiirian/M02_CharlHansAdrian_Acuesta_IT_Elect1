@@ -10,14 +10,15 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { colors } from '../theme/colors';
 
 export default function Comments() {
   const [posts, setPosts] = useState([
     {
       id: '1',
       title: 'First 2x2 Pic Post',
-      content: 'This is my pictorial post. Comment anything nicely here!',
-      image: require('../assets/images/2x2-pic.png'),
+      content: 'This is my profile picture. My first post!',
+      image: require('../assets/images/payot.jpg'),
       likes: 0,
       comments: [],
     },
@@ -25,7 +26,7 @@ export default function Comments() {
       id: '2',
       title: 'Beautiful Sunset',
       content: 'Caught this amazing sunset today! Nature is truly breathtaking.',
-      image: require('../assets/images/beautiful-sunset.jpg'),
+      image: require('../assets/images/sunset.jpg'),
       likes: 15,
       comments: [],
     },
@@ -33,16 +34,8 @@ export default function Comments() {
       id: '3',
       title: 'New Recipe',
       content: 'Just tried this new pasta recipe. It was delicious! 🍝',
-      image: require('../assets/images/recipe.jpg'),
+      image: require('../assets/images/food.jpg'),
       likes: 8,
-      comments: [],
-    },
-    {
-      id: '4',
-      title: 'Weekend Plans',
-      content: 'Anyone up for a hike this weekend? The weather looks perfect!',
-      image: require('../assets/images/weekend.jpg'),
-      likes: 22,
       comments: [],
     },
   ]);
@@ -123,6 +116,7 @@ export default function Comments() {
         <TextInput
           style={styles.input}
           placeholder="Add a comment..."
+          placeholderTextColor={colors.textSecondary}
           value={commentInputs[item.id] || ''}
           onChangeText={(text) => setCommentInputs({ ...commentInputs, [item.id]: text })}
         />
@@ -146,6 +140,7 @@ export default function Comments() {
           <TextInput
             style={styles.input}
             placeholder="Reply..."
+            placeholderTextColor={colors.textSecondary}
             value={replyText}
             onChangeText={setReplyText}
           />
@@ -185,7 +180,7 @@ export default function Comments() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: colors.background,
   },
   postsList: {
     flex: 1,
@@ -193,20 +188,22 @@ const styles = StyleSheet.create({
   },
   postContainer: {
     marginVertical: 10,
-    padding: 10,
-    backgroundColor: '#333',
-    borderRadius: 10,
+    padding: 12,
+    backgroundColor: colors.surface,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   postTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,
-    color: '#fff',
+    color: colors.textPrimary,
   },
   postContent: {
     fontSize: 16,
     marginBottom: 10,
-    color: '#ccc',
+    color: colors.textSecondary,
   },
   commentsList: {
     flexGrow: 0,
@@ -216,22 +213,22 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   commentBubble: {
-    backgroundColor: '#555',
+    backgroundColor: colors.surfaceElevated,
     borderRadius: 10,
     padding: 10,
     maxWidth: '90%',
   },
   replyBubble: {
     marginLeft: 20,
-    backgroundColor: '#666',
+    backgroundColor: colors.surface,
   },
   commentText: {
     fontSize: 16,
-    color: '#fff',
+    color: colors.textPrimary,
   },
   replyText: {
     fontSize: 14,
-    color: '#007AFF',
+    color: colors.accent,
     marginTop: 5,
   },
   replyContainer: {
@@ -247,23 +244,23 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#555',
+    borderColor: colors.border,
     borderRadius: 20,
     paddingHorizontal: 15,
     paddingVertical: 8,
-    backgroundColor: '#333',
-    color: '#fff',
+    backgroundColor: colors.surface,
+    color: colors.textPrimary,
   },
   sendButton: {
     marginLeft: 10,
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.accent,
     paddingHorizontal: 20,
     paddingVertical: 10,
     justifyContent: 'center',
     borderRadius: 20,
   },
   sendText: {
-    color: '#fff',
+    color: colors.textPrimary,
     fontWeight: 'bold',
   },
   repliesList: {
@@ -285,6 +282,6 @@ const styles = StyleSheet.create({
   },
   actionText: {
     fontSize: 16,
-    color: '#007AFF',
+    color: colors.accent,
   },
 });

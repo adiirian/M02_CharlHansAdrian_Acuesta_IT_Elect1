@@ -14,6 +14,7 @@ import {
   View
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+import { colors } from '../theme/colors';
 
 export default function Login() {
   const router = useRouter();
@@ -59,11 +60,11 @@ export default function Login() {
           <View style={styles.form}>
             {/* Email Input */}
             <View style={styles.inputContainer}>
-              <Ionicons name="mail-outline" size={20} color="#888" style={styles.inputIcon} />
+              <Ionicons name="mail-outline" size={20} color={colors.textSecondary} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="Email"
-                placeholderTextColor="#888"
+                placeholderTextColor={colors.textSecondary}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -74,11 +75,11 @@ export default function Login() {
 
             {/* Password Input */}
             <View style={styles.inputContainer}>
-              <Ionicons name="lock-closed-outline" size={20} color="#888" style={styles.inputIcon} />
+              <Ionicons name="lock-closed-outline" size={20} color={colors.textSecondary} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="Password"
-                placeholderTextColor="#888"
+                placeholderTextColor={colors.textSecondary}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
@@ -92,7 +93,7 @@ export default function Login() {
                 <Ionicons
                   name={showPassword ? 'eye-outline' : 'eye-off-outline'}
                   size={20}
-                  color="#888"
+                  color={colors.textSecondary}
                 />
               </TouchableOpacity>
             </View>
@@ -135,7 +136,7 @@ export default function Login() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: colors.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -152,12 +153,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.textPrimary,
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 16,
-    color: '#888',
+    color: colors.textSecondary,
   },
   form: {
     width: '100%',
@@ -165,19 +166,19 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1e1e1e',
+    backgroundColor: colors.surface,
     borderRadius: 12,
     marginBottom: 16,
     paddingHorizontal: 15,
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: colors.border,
   },
   inputIcon: {
     marginRight: 10,
   },
   input: {
     flex: 1,
-    color: '#fff',
+    color: colors.textPrimary,
     fontSize: 16,
     paddingVertical: 15,
   },
@@ -189,11 +190,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   forgotPasswordText: {
-    color: '#007AFF',
+    color: colors.accent,
     fontSize: 14,
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.accent,
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',
@@ -203,7 +204,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   buttonText: {
-    color: '#fff',
+    color: colors.textPrimary,
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -213,11 +214,11 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   footerText: {
-    color: '#888',
+    color: colors.textSecondary,
     fontSize: 14,
   },
   linkText: {
-    color: '#007AFF',
+    color: colors.accent,
     fontSize: 14,
     fontWeight: 'bold',
   },

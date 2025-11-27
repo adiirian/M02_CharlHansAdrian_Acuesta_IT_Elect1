@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { colors } from '../theme/colors';
 import { clearResetToken, getUserByEmail, saveResetToken, updateUserPassword } from '../utils/database';
 import { generateResetToken, hashPassword, validateEmail, validatePassword } from '../utils/passwordUtils';
 
@@ -147,7 +148,7 @@ export default function ForgotPassword() {
         <View style={styles.content}>
           {/* Header */}
           <View style={styles.header}>
-            <Ionicons name="key-outline" size={60} color="#007AFF" />
+            <Ionicons name="key-outline" size={60} color={colors.accent} />
             <Text style={styles.title}>Forgot Password</Text>
             <Text style={styles.subtitle}>
               {step === 1 && 'Enter your email to receive a reset token'}
@@ -160,11 +161,11 @@ export default function ForgotPassword() {
           {step === 1 && (
             <View style={styles.form}>
               <View style={styles.inputContainer}>
-                <Ionicons name="mail-outline" size={20} color="#888" style={styles.inputIcon} />
+                <Ionicons name="mail-outline" size={20} color={colors.textSecondary} style={styles.inputIcon} />
                 <TextInput
                   style={styles.input}
                   placeholder="Email"
-                  placeholderTextColor="#888"
+                  placeholderTextColor={colors.textSecondary}
                   value={email}
                   onChangeText={setEmail}
                   keyboardType="email-address"
@@ -196,11 +197,11 @@ export default function ForgotPassword() {
               </View>
 
               <View style={styles.inputContainer}>
-                <Ionicons name="shield-checkmark-outline" size={20} color="#888" style={styles.inputIcon} />
+                <Ionicons name="shield-checkmark-outline" size={20} color={colors.textSecondary} style={styles.inputIcon} />
                 <TextInput
                   style={styles.input}
                   placeholder="Enter Reset Token"
-                  placeholderTextColor="#888"
+                  placeholderTextColor={colors.textSecondary}
                   value={resetToken}
                   onChangeText={setResetToken}
                   autoCapitalize="none"
@@ -227,11 +228,11 @@ export default function ForgotPassword() {
           {step === 3 && (
             <View style={styles.form}>
               <View style={styles.inputContainer}>
-                <Ionicons name="lock-closed-outline" size={20} color="#888" style={styles.inputIcon} />
+                <Ionicons name="lock-closed-outline" size={20} color={colors.textSecondary} style={styles.inputIcon} />
                 <TextInput
                   style={styles.input}
                   placeholder="New Password"
-                  placeholderTextColor="#888"
+                  placeholderTextColor={colors.textSecondary}
                   value={newPassword}
                   onChangeText={setNewPassword}
                   secureTextEntry={!showPassword}
@@ -244,17 +245,17 @@ export default function ForgotPassword() {
                   <Ionicons
                     name={showPassword ? 'eye-outline' : 'eye-off-outline'}
                     size={20}
-                    color="#888"
+                    color={colors.textSecondary}
                   />
                 </TouchableOpacity>
               </View>
 
               <View style={styles.inputContainer}>
-                <Ionicons name="lock-closed-outline" size={20} color="#888" style={styles.inputIcon} />
+                <Ionicons name="lock-closed-outline" size={20} color={colors.textSecondary} style={styles.inputIcon} />
                 <TextInput
                   style={styles.input}
                   placeholder="Confirm New Password"
-                  placeholderTextColor="#888"
+                  placeholderTextColor={colors.textSecondary}
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
                   secureTextEntry={!showConfirmPassword}
@@ -267,7 +268,7 @@ export default function ForgotPassword() {
                   <Ionicons
                     name={showConfirmPassword ? 'eye-outline' : 'eye-off-outline'}
                     size={20}
-                    color="#888"
+                    color={colors.textSecondary}
                   />
                 </TouchableOpacity>
               </View>
@@ -291,7 +292,7 @@ export default function ForgotPassword() {
             style={styles.loginLink}
             onPress={() => router.push('/login')}
           >
-            <Ionicons name="arrow-back" size={16} color="#007AFF" />
+            <Ionicons name="arrow-back" size={16} color={colors.accent} />
             <Text style={styles.loginLinkText}>Back to Login</Text>
           </TouchableOpacity>
         </View>
@@ -303,7 +304,7 @@ export default function ForgotPassword() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: colors.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -321,13 +322,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.textPrimary,
     marginTop: 20,
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 14,
-    color: '#888',
+    color: colors.textSecondary,
     textAlign: 'center',
     paddingHorizontal: 20,
   },
@@ -337,19 +338,19 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1e1e1e',
+    backgroundColor: colors.surface,
     borderRadius: 12,
     marginBottom: 16,
     paddingHorizontal: 15,
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: colors.border,
   },
   inputIcon: {
     marginRight: 10,
   },
   input: {
     flex: 1,
-    color: '#fff',
+    color: colors.textPrimary,
     fontSize: 16,
     paddingVertical: 15,
   },
@@ -357,26 +358,26 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   tokenDisplay: {
-    backgroundColor: '#1e1e1e',
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: 15,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#007AFF',
+    borderColor: colors.accent,
   },
   tokenLabel: {
-    color: '#888',
+    color: colors.textSecondary,
     fontSize: 12,
     marginBottom: 5,
   },
   tokenText: {
-    color: '#007AFF',
+    color: colors.accent,
     fontSize: 14,
     fontWeight: 'bold',
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.accent,
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',
@@ -386,7 +387,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   buttonText: {
-    color: '#fff',
+    color: colors.textPrimary,
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -395,7 +396,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backButtonText: {
-    color: '#888',
+    color: colors.textSecondary,
     fontSize: 14,
   },
   loginLink: {
@@ -405,7 +406,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   loginLinkText: {
-    color: '#007AFF',
+    color: colors.accent,
     fontSize: 14,
     marginLeft: 5,
   },

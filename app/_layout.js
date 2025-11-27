@@ -3,6 +3,7 @@ import { Stack, Tabs, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { AuthProvider, useAuth } from "../context/AuthContext";
+import { colors } from '../theme/colors';
 
 function RootLayoutNav() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -26,7 +27,7 @@ function RootLayoutNav() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color={colors.accent} />
       </View>
     );
   }
@@ -47,11 +48,11 @@ function RootLayoutNav() {
     <Tabs
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: '#1e1e1e',
-          borderTopColor: '#333',
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
         },
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#888',
+        tabBarActiveTintColor: colors.accent,
+        tabBarInactiveTintColor: colors.textSecondary,
       }}
     >
       <Tabs.Screen
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#121212',
+    backgroundColor: colors.background,
   },
 });
 

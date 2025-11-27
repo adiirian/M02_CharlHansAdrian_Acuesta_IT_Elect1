@@ -4,6 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import { Alert, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+import { colors } from '../theme/colors';
 
 export default function Index() {
   const { user, logout, updateProfilePicture } = useAuth();
@@ -68,7 +69,7 @@ export default function Index() {
               contentFit="cover"
             />
           ) : (
-            <Ionicons name="person-circle-outline" size={80} color="#007AFF" />
+            <Ionicons name="person-circle-outline" size={80} color={colors.accent} />
           )}
         </TouchableOpacity>
         <Text style={styles.changePictureText}>Click this icon to change picture</Text>
@@ -79,7 +80,7 @@ export default function Index() {
       {/* User Info Card */}
       <View style={styles.card}>
         <View style={styles.infoRow}>
-          <Ionicons name="person-outline" size={20} color="#007AFF" />
+          <Ionicons name="person-outline" size={20} color={colors.accent} />
           <View style={styles.infoContent}>
             <Text style={styles.infoLabel}>Name</Text>
             <Text style={styles.infoValue}>{user?.name || user?.email}</Text>
@@ -89,7 +90,7 @@ export default function Index() {
         <View style={styles.divider} />
 
         <View style={styles.infoRow}>
-          <Ionicons name="mail-outline" size={20} color="#007AFF" />
+          <Ionicons name="mail-outline" size={20} color={colors.accent} />
           <View style={styles.infoContent}>
             <Text style={styles.infoLabel}>Email</Text>
             <Text style={styles.infoValue}>{user?.email}</Text>
@@ -101,13 +102,13 @@ export default function Index() {
 
       {/* About Button */}
       <TouchableOpacity style={styles.aboutButton} onPress={() => setIsModalVisible(true)}>
-        <Ionicons name="information-circle-outline" size={20} color="#fff" />
+        <Ionicons name="information-circle-outline" size={20} color={colors.textPrimary} />
         <Text style={styles.aboutText}>About</Text>
       </TouchableOpacity>
 
       {/* Logout Button */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Ionicons name="log-out-outline" size={20} color="#fff" />
+        <Ionicons name="log-out-outline" size={20} color={colors.textPrimary} />
         <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>
 
@@ -126,26 +127,25 @@ export default function Index() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <TouchableOpacity style={styles.closeButton} onPress={() => setIsModalVisible(false)}>
-              <Ionicons name="close" size={24} color="#fff" />
+              <Ionicons name="close" size={24} color={colors.textPrimary} />
             </TouchableOpacity>
-            <Text style={styles.modalTitle}>App Info</Text>
+            <Text style={styles.modalTitle}>My Project</Text>
             <Image
-              source={require('../assets/images/2x2-pic.png')}
+              source={require('../assets/images/payot.jpg')}
               style={styles.modalImage}
               contentFit="cover"
             />
             <Text style={styles.modalLabel}>Submitted By:</Text>
-            <Text style={styles.modalValue}>Charl Hans Adrian Acuesta</Text>
+            <Text style={styles.modalValue}>Michael Dave Payot</Text>
             <Text style={styles.modalLabel}>Submitted To:</Text>
             <Text style={styles.modalValue}>Jay Ian Camelotes</Text>
             <Text style={styles.modalLabel}>Bio:</Text>
-            <Text style={styles.modalValue}>Though I&apos;m still discovering who I am, I continue to walk the path to success.
-              &ldquo;In the end, we will remember not the words of our enemies, but the silence of our friends.&rdquo; - Martin Luther King Jr.
+            <Text style={styles.modalValue}>
+              Curious mobile developer who thrives on turning classroom ideas into polished React Native experiences. I love shipping
+              features that feel personal, obsessing over clean UI details, and learning something new with every build.
             </Text>
             <Text style={styles.modalLabel}>Address:</Text>
-            <Text style={styles.modalValue}>Guinobatan, Trinidad, Bohol</Text>
-            <Text style={styles.modalLabel}>Final Project in IT Elective 1:</Text>
-            <Text style={styles.modalValue}>Mobile Dev</Text>
+            <Text style={styles.modalValue}>Bood, Ubay, Bohol</Text>
           </View>
         </View>
       </Modal>
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#121212',
+    backgroundColor: colors.background,
     paddingHorizontal: 30,
   },
   header: {
@@ -168,23 +168,23 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.textPrimary,
     marginTop: 15,
     marginBottom: 5,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#888',
+    color: colors.textSecondary,
   },
   card: {
     width: '100%',
-    backgroundColor: '#1e1e1e',
+    backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 20,
     marginBottom: 30,
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: colors.border,
   },
   infoRow: {
     flexDirection: 'row',
@@ -196,17 +196,17 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 12,
-    color: '#888',
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   infoValue: {
     fontSize: 16,
-    color: '#fff',
+    color: colors.textPrimary,
     fontWeight: '600',
   },
   divider: {
     height: 1,
-    backgroundColor: '#333',
+    backgroundColor: colors.border,
     marginVertical: 15,
   },
   navigationInfo: {
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
   },
   navigationText: {
     fontSize: 14,
-    color: '#888',
+    color: colors.textSecondary,
     marginBottom: 15,
     textAlign: 'center',
     justifyContent: 'center',
@@ -225,31 +225,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
-    backgroundColor: '#1e1e1e',
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: 15,
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: colors.border,
   },
   tabItem: {
     alignItems: 'center',
   },
   tabText: {
     fontSize: 12,
-    color: '#888',
+    color: colors.textSecondary,
     marginTop: 5,
   },
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ff4444',
+    backgroundColor: colors.danger,
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 12,
     marginTop: 10,
   },
   logoutText: {
-    color: '#fff',
+    color: colors.textPrimary,
     fontSize: 16,
     fontWeight: 'bold',
     marginLeft: 10,
@@ -263,25 +263,25 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 40,
     borderWidth: 2,
-    borderColor: '#007AFF',
+    borderColor: colors.accent,
   },
   changePictureText: {
     fontSize: 14,
-    color: '#888',
+    color: colors.textSecondary,
     marginTop: 5,
     marginBottom: 10,
   },
   aboutButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.accent,
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 12,
     marginBottom: 10,
   },
   aboutText: {
-    color: '#fff',
+    color: colors.textPrimary,
     fontSize: 16,
     fontWeight: 'bold',
     marginLeft: 10,
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: '#1e1e1e',
+    backgroundColor: colors.surfaceElevated,
     borderRadius: 16,
     padding: 20,
     width: '90%',
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.textPrimary,
     marginBottom: 20,
   },
   modalImage: {
@@ -318,13 +318,13 @@ const styles = StyleSheet.create({
   },
   modalLabel: {
     fontSize: 14,
-    color: '#888',
+    color: colors.textSecondary,
     alignSelf: 'flex-start',
     marginBottom: 5,
   },
   modalValue: {
     fontSize: 16,
-    color: '#fff',
+    color: colors.textPrimary,
     marginBottom: 15,
     textAlign: 'left',
   },

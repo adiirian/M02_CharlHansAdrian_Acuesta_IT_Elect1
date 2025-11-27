@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Payot_M",
-    "slug": "ReactNative",
+    "name": "Besan_A",
+    "slug": "besan-a",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/payot.jpg",
+    "icon": "./assets/images/ashley.jpg",
     "scheme": "reactnative",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,7 +14,7 @@
     "android": {
       "package": "com.messengerapp.reactnative",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/payot.jpg",
+        "foregroundImage": "./assets/images/ashley.jpg",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
@@ -22,14 +22,14 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/payot.jpg"
+      "favicon": "./assets/images/ashley.jpg"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/payot.jpg",
+          "image": "./assets/images/ashley.jpg",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"

@@ -69,7 +69,11 @@ export default function Index() {
               contentFit="cover"
             />
           ) : (
-            <Ionicons name="person-circle-outline" size={80} color={colors.accent} />
+            <Image
+              source={require('../assets/images/ashley.jpg')}
+              style={styles.profilePicture}
+              contentFit="cover"
+            />
           )}
         </TouchableOpacity>
         <Text style={styles.changePictureText}>Click this icon to change picture</Text>
@@ -102,13 +106,13 @@ export default function Index() {
 
       {/* About Button */}
       <TouchableOpacity style={styles.aboutButton} onPress={() => setIsModalVisible(true)}>
-        <Ionicons name="information-circle-outline" size={20} color={colors.textPrimary} />
+        <Ionicons name="information-circle-outline" size={20} color={colors.surface} />
         <Text style={styles.aboutText}>About</Text>
       </TouchableOpacity>
 
       {/* Logout Button */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Ionicons name="log-out-outline" size={20} color={colors.textPrimary} />
+        <Ionicons name="log-out-outline" size={20} color={colors.surface} />
         <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>
 
@@ -131,21 +135,21 @@ export default function Index() {
             </TouchableOpacity>
             <Text style={styles.modalTitle}>My Project</Text>
             <Image
-              source={require('../assets/images/payot.jpg')}
+              source={require('../assets/images/ashley.jpg')}
               style={styles.modalImage}
               contentFit="cover"
             />
             <Text style={styles.modalLabel}>Submitted By:</Text>
-            <Text style={styles.modalValue}>Michael Dave Payot</Text>
+            <Text style={styles.modalValue}>Ashley Joy Besan</Text>
             <Text style={styles.modalLabel}>Submitted To:</Text>
             <Text style={styles.modalValue}>Jay Ian Camelotes</Text>
             <Text style={styles.modalLabel}>Bio:</Text>
             <Text style={styles.modalValue}>
-              Curious mobile developer who thrives on turning classroom ideas into polished React Native experiences. I love shipping
-              features that feel personal, obsessing over clean UI details, and learning something new with every build.
+              Product-focused builder who enjoys crafting bright, friendly mobile flows. I document everything, love pairing sessions,
+              and believe delightful UI decisions can make any requirement feel personal.
             </Text>
             <Text style={styles.modalLabel}>Address:</Text>
-            <Text style={styles.modalValue}>Bood, Ubay, Bohol</Text>
+            <Text style={styles.modalValue}>Mayuga, Guindulman, Bohol</Text>
           </View>
         </View>
       </Modal>
@@ -249,7 +253,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   logoutText: {
-    color: colors.textPrimary,
+    color: colors.surface,
     fontSize: 16,
     fontWeight: 'bold',
     marginLeft: 10,
@@ -281,7 +285,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   aboutText: {
-    color: colors.textPrimary,
+    color: colors.surface,
     fontSize: 16,
     fontWeight: 'bold',
     marginLeft: 10,

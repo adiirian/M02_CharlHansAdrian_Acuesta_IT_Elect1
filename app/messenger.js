@@ -2,17 +2,17 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  Image,
-  KeyboardAvoidingView,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    FlatList,
+    Image,
+    KeyboardAvoidingView,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { colors } from '../theme/colors';
@@ -257,7 +257,7 @@ export default function Messenger() {
           <View style={styles.replyRow}>
             <View style={styles.avatarContainer}>
               <Image
-                source={require('../assets/images/payot.jpg')}
+                source={require('../assets/images/ashley.jpg')}
                 style={styles.avatar}
               />
             </View>
